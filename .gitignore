@@ -1,0 +1,8 @@
+# Project Files
+/target
+.idea/
+dist/
+
+# Personal References
+dndbeyondexample.html
+modednd.html
