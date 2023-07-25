@@ -2,14 +2,13 @@ use yew::prelude::*;
 
 enum Msg {
     Add,
-    //AddMany(toAdd)
 }
 
-struct App {
+struct CounterComponent {
     count: i64
 }
 
-impl Component for App {
+impl Component for CounterComponent {
     type Message = Msg;
     type Properties = ();
 
@@ -29,7 +28,7 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
         html! {
-            <div class="container">
+            <div>
                 <p>{ self.count }</p>
                 <button onclick={link.callback(|_| Msg::Add)}>{ "+1" }</button>
             </div>
@@ -37,7 +36,39 @@ impl Component for App {
     }
 }
 
+enum AppMsg {
+    DoThing,
+}
+
+struct App {
+    counter: Context<CounterComponent>
+}
+
+
+impl Component for App {
+    type Message = AppMsg;
+    type Properties = ();
+
+    fn create(ctx: &Context<Self>) -> Self {
+        let counter = ctx.link().create_component::<CounterComponent>();
+        Self { counter: counter }
+    }
+
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        false
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            <div class="container">
+                <>{ self.counter.view(self.counter.component, self.counter) }</>
+                <p>{ "augbaj" }</p>
+            </div>
+        }
+    }
+}
+
 fn main() {
-    //yew::start_app::<CounterComponent>();
-    yew::Renderer::<App>::new().render();
+    yew::start_app::<CounterComponent>();
+    //yew::Renderer::<App>::new().render();
 }
