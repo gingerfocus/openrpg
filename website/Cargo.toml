@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 yew = { version = "0.20.0", features = ["csr"] }
-bracket-random = "0.8.2"
+# bracket-random = "0.8.2"

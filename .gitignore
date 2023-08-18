@@ -1,5 +1,4 @@
-/target
+target/
 dist/
-/homebrewery
-/examples
-brewery
+
+/refs/
