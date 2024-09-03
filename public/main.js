@@ -1,3 +1,29 @@
+let data;
+
+function savedata() {
+    if (typeof data == "undefined") return;
+
+    var a = window.document.createElement('a');
+    a.href = window.URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
+
+    // TODO: change file name to character name
+    a.download = 'character.json';
+
+    console.log("saving file");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function usetemplate() {
+    fetch("/template.json").then((tmpl) => {
+        tmpl.json().then((d) => {
+            data = d
+            main()
+        })
+    })
+}
+
 const main = function () {
     const estats = document.getElementById("stats");
 
@@ -60,89 +86,21 @@ const main = function () {
     }
 }
 
-window.addEventListener('load', main)
-
 function parse(str) {
     return Function(`'use strict'; return (${str})`)()
 }
 
-// document.write( "1+2+3", '=' , parse("1+2+3"), '<br>');
-// document.write( "1 + 2 * 3", '=' , parse("1 + 2 * 3"), '<br>');
-
-const data = {
-    "name": "Rapheal Augirre",
-    "atributes": {
-        "Body": 4,
-        "Talent": 3,
-        "Spirit": 3,
-        "Mind": 3,
-        "Grit": "4 + 1",
-        "Health": "2 * 4 + 2 * 1",
-        "Speed": "2 + 2 / 2",
-        "Focus": "1 + 3 / 2"
-    },
-    "ability":  {
-        "points": 4,
-        "desc": "You can transform the four elements into plants so long as you hold your breath."
-    },
-    "skills": {
-        "Invincible Under the Sun": 1,
-        "Unthinking Instinct": 1,
-        "Water Dwelling": 2
-    },
-    "techniques": {
-        "Dual Wielder": {
-            "level": 3,
-            "type": "Powerhouse",
-            "skills": [
-                `Twinned Blow: When you Skirmish targeting one character, you may “Flurry”,
-                repeating the Attack with Swift at no cost. This reduces the dice rolled for
-                both to half (before Advantage/Disadvantage).`,
-
-                `Frenzied Barrage: When you spend 2 or more Focus on a Finisher, you may
-                substitute it with three Swift Skirmishes that roll half their base dice (before
-                applying Advantage/Disadvantage) used one after another (these skirmishes cannot
-                trigger “Twinned Blow”).`,
-
-                `Varied Blades: Your Skirmishes have an additional two effects that alternate
-                every time you use Skirmish, resetting at the start of your Turn. The first
-                Skirmish is *Astral: Gain \[Tier / 2\] Focus*, second is *Vorpal: Restore \[Tier /
-                2\] Health*, third is Astral again.`
-            ]
-        },
-        "Predator": {
-            "level": 1,
-            "type": "Powerhouse",
-            "skills": [
-                `Yearn: The first time you Investigate each Turn, it becomes Swift and has its
-                Cost Reduced to 0. However, it can only be used to ask what your target’s
-                current and maximum Health is. When any opponent is Knocked Out while adjacent
-                to you, you heal a Wound.`,
-
-                `Obsess: When you know an opponent has half their maximum Health remaining,
-                your Speed is increased by 3, and you ignore Difficult Terrain, but you cannot
-                move unless you’re moving closer to at least one of said opponents.`,
-
-                `Devour: Once per Scene, when you heal a Wound using “Yearn” you may
-                ‘Indulge’, Immobilizing and Dazing yourself. While you’re under these Effects,
-                the Focus gained through Breathe and Charge are replaced with healing an equal
-                number of Wounds.`
-            ]
-        },
-        "Absolute Bastard": {
-            "level": 1,
-            "type": "Bulwark",
-            "skills": [
-                `Easy To Hate: When you Investigate an enemy, you may use this Technique to
-                Taunt them. This can only be used 3 times per Scene.`,
-
-                `Bully: Once per turn when you Taunt a character you may move up to 3 spaces
-                towards them, if you move adjacent to them, you may Snare them and gain 1 AP.`,
-
-                `Add Injury To Insult: Your Attacks against characters you’ve Taunted gain
-                [Tier] Advantage.`
-            ]
-        }
-    },
-}
-
+window.addEventListener('load', function () {
+    const inputfile = document.getElementById("inputfile");
+    inputfile.addEventListener("change", () => {
+        // if (inputfile.files.length == 1) { console.log("File selected: ", inputfile.files[0]); }
+        var reader = new FileReader();
+        reader.onload = function() {
+            const obj = JSON.parse(reader.result);
+            // console.log("new input: " + obj);
+            data = obj;
+            main();
+        };
+        reader.readAsText(inputfile.files[0]);
+    });
+})

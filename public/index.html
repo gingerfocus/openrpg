@@ -9,26 +9,43 @@
     <script src="/main.js"></script>
     <link rel="icon" href="/opendawn.png" />
 </head>
-<body class="flexacross">
-    <div class="screen flexdown flexfill" style="width: 70vw; min-height: 100vh">
-        <div class="screen">
-            <div class="flexacross" id="stats" style="flex-wrap: wrap"></div>
+<body>
+    <header class="flexacross">
+        <h2>Opendawn</h2>
+        <label class="file-button">
+            <input type="file" id="inputfile" style="display: none">
+            <!-- accept="image/png, image/jpeg"> -->
+            Upload
+        </label>
+        <label class="file-button">
+            <button style="display: none" onclick="savedata()"></button>
+            Save
+        </label>
+        <label class="file-button">
+            <button style="display: none" onclick="usetemplate()"></button>
+            Use Template
+        </label>
+        <div class="flexfill"></div>
+        <p>Made by a "<em><a href="https://github.com/gingerfocus/opendawn">human</a></em>"</p>
+    </header>
+    <main class="flexacross">
+        <div class="screen flexdown flexfill" style="width: 70vw">
+            <div class="screen">
+                <div class="flexacross" id="stats" style="flex-wrap: wrap"></div>
+            </div>
+            <div class="screen">
+                <div class="flexdown" id="skills"></div>
+            </div>
+            <div class="screen">
+                <div class="flexdown" id="techniques"></div>
+            </div>
+            <div class="screen flexfill"></div>
         </div>
-        <div class="screen">
-            <div class="flexdown" id="skills"></div>
+        <div class="screen flexdown flexfill" style="width: 30vw; min-height: 100vh">
+            <div class="screen" id="playername"></div>
+            <div class="screen flexfill"></div>
         </div>
-        <div class="screen">
-            <div class="flexdown" id="techniques"></div>
-        </div>
-        <div class="screen flexfill"></div>
-    </div>
-    <div class="screen flexdown flexfill" style="width: 30vw; min-height: 100vh">
-        <div class="screen" id="playername"></div>
-        <div class="screen flexfill"></div>
-        <div class="screen">
-            <p><strong>Opendawn</strong> was made by a "<em><a href="https://github.com/gingerfocus/opendawn">human</a></em>".</p>
-        </div>
-    </div>
+    </main>
 </body>
 </html>
 
