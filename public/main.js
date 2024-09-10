@@ -1,3 +1,6 @@
+// Of note this page has lots of XSS vulurabilities due to innerHTML but that 
+// alright. :)
+
 // ----------------------  begin DawnMath.js -----------------------------------
 
 /// Returns an array of objects of the type:
@@ -117,42 +120,128 @@ function dawnParse(str, opts) {
 
 let data;
 
-let estats;
-let eskills; 
+let popupopen = false;
 
-function preprocessBundle() {
-    let atributes = data.atributes;
+let estats;
+let eskills;
+let ename;
+let etechniques;
+let ebody;
+
+function editTechnique(technique) {
+    if (popupopen) return;
+
+    popupopen = true;
+
+    const popup = document.createElement("div");
+    popup.classList.add("popup")
+    popup.classList.add("screen")
+
+    const header = document.createElement("h1")
+    header.contentEditable = true;
+    header.innerText = technique.name;
+    popup.appendChild(header)
+
+    let elements = []
+    for (let i = 0; i < technique.skills.length; i++) {
+        const rank = technique.skills[i];
+
+        const header = document.createElement("h2")
+        header.innerText = rank.name
+        header.contentEditable = true;
+        popup.appendChild(header);
+
+        const desc = document.createElement("p");
+        desc.innerText = rank.desc;
+        desc.contentEditable = true;
+        popup.appendChild(desc);
+
+        elements.push({
+            name: header,
+            desc: desc
+        })
+    }
+
+    const save = document.createElement("button");
+    save.classList.add("file-button")
+    save.innerText = "Save"
+    save.onclick = (event) => {
+        technique.name = header.innerText;
+
+        for (let i = 0; i < technique.skills.length; i++) {
+            const skill = technique.skills[i]
+            const element = elements[i]
+
+            skill.name = element.name.innerText;
+            skill.desc = element.desc.innerText;
+        }
+
+        document.querySelector("body").removeChild(popup)
+        popupopen = false;
+
+        // reloads the technique part of the ui
+        loadBundleTechniquies()
+    }
+    popup.appendChild(save)
+
+    ebody.appendChild(popup)
+}
+
+let atributes = {}
+
+function preprocessAttributes() {
+    atributes = data.atributes;
     for (feild in atributes) {
         atributes[feild] = dawnParse(atributes[feild], atributes)
     }
 }
 
-// loadBundle()
-function main() {
-    preprocessBundle();
+function loadBundleTechniquies() {
+    etechniques.innerHTML = ""
 
-    // clears existing content
-    estats.innerHTML = "";
-    eskills.innerHTML = "";
+    for (const t in data.techniques) {
+        const technique = data.techniques[t];
 
+        const techniquesbox = document.createElement("div");
+        techniquesbox.classList.add("techniquesbox");
 
-    for (const feild in data.atributes) {
-        const statbox = document.createElement("div");
-        statbox.classList.add("statbox");
+        techniquesbox.addEventListener("click", (event) => editTechnique(technique))
 
-        let v;
-        if (typeof data.atributes[feild] == "string") {
-            v = dawnMath(data.atributes[feild])
-        } else {
-            v = data.atributes[feild]
+        const name = document.createElement("h2");
+        name.innerHTML = technique.name;
+        techniquesbox.appendChild(name);
+
+        for (let i = 0; i < technique.level; i++) {
+            const rank = technique.skills[i];
+
+            const header = document.createElement("h3")
+            header.textContent = rank.name
+            techniquesbox.appendChild(header);
+
+            let thing = ""
+            let start = 0
+            const matches = dawnMatch(rank.desc)
+            for (m in matches) {
+                const match = matches[m]
+                // TODO: make some sort of hover thing for this bold 
+                const parsed = "<strong>" + dawnParse(match.inner, data.atributes) + "</strong>"
+                thing = thing + rank.desc.substring(start, match.start) + parsed
+                start = match.end
+            }
+            thing = thing + rank.desc.substring(start)
+
+            const desc = document.createElement("p");
+
+            // HACK: this can be used for XSS
+            desc.innerHTML = thing;
+            techniquesbox.appendChild(desc);
         }
-        statbox.innerHTML =
-            "<p>" + feild + "</p>" +
-            "<p>" + v + "</p>";
 
-        estats.appendChild(statbox);
+        etechniques.appendChild(techniquesbox);
     }
+}
 
+function loadBundleSkills() {
     for (const name in data.skills) {
         const skillbox = document.createElement("div");
         skillbox.classList.add("skillbox");
@@ -162,40 +251,40 @@ function main() {
 
         eskills.appendChild(skillbox);
     }
+}
 
-    const ename = document.getElementById("playername");
-    ename.innerHTML = data.name;
+function loadBundle() {
+    preprocessAttributes();
 
-    const etechniques = document.getElementById("techniques");
+    // clears existing content
+    estats.innerHTML = "";
+    eskills.innerHTML = "";
+    ename.innerText = data.name;
 
-    for (const techniqueName in data.techniques) {
-        const techniquesbox = document.createElement("div");
-        techniquesbox.classList.add("techniquesbox");
+    for (const feild in atributes) {
+        const statbox = document.createElement("div");
+        statbox.classList.add("statbox");
 
-        const name = document.createElement("h3");
-        name.innerHTML = techniqueName;
-        techniquesbox.appendChild(name);
+        let v = atributes[feild]
 
-        const technique = data.techniques[techniqueName];
+        statbox.innerHTML =
+            "<p>" + feild + "</p>" +
+            "<p>" + v + "</p>";
 
-        const list = document.createElement("ul");
-
-        for (let i = 0; i < technique.level; i++) {
-            const description = technique.skills[i];
-            const item = document.createElement("li");
-            item.innerHTML = description;
-            list.appendChild(item);
-        }
-
-        techniquesbox.appendChild(list);
-
-        etechniques.appendChild(techniquesbox);
+        estats.appendChild(statbox);
     }
+
+    loadBundleSkills()
+
+    loadBundleTechniquies()
 }
 
 window.addEventListener('load', function () {
     estats = document.getElementById("stats");
     eskills = document.getElementById("skills");
+    ename = document.getElementById("playername");
+    etechniques = document.getElementById("techniques");
+    ebody = document.querySelector("body")
 
     const inputfile = document.getElementById("inputfile");
     inputfile.addEventListener("change", () => {
@@ -204,7 +293,7 @@ window.addEventListener('load', function () {
         var reader = new FileReader();
         reader.onload = function() {
             data = JSON.parse(reader.result);
-            main();
+            loadBundle();
         };
         reader.readAsText(inputfile.files[0]);
     });
@@ -215,10 +304,12 @@ function usetemplate() {
     fetch("/template.json").then((tmpl) => {
         tmpl.json().then((d) => {
             data = d
-            main()
+            loadBundle()
         })
     })
 }
+
+// document.designMode = "on";
 
 function savedata() {
     if (typeof data == "undefined") return;
