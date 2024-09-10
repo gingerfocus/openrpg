@@ -1,31 +1,140 @@
+// ----------------------  begin DawnMath.js -----------------------------------
+
+/// Returns an array of objects of the type:
+/// {
+///     "start": int,
+///     "end": int,
+///     "inner": String,
+/// }
+function dawnMatch(str) {
+    let matches = [];
+
+    var start = -1;
+
+    var searching = false;
+    var brackets = 0;
+
+    for (var i = 0; i < str.length; i++) {
+        const c = str[i];
+        // console.log("char: " + c + ", i: " + i)
+        if (searching) {
+            if (c == '[') brackets += 1
+
+            if (c == ']') {
+                brackets -= 1
+                // TODO: check for underflow
+                // console.log("removing bracket (count: " + brackets + ")")
+
+                if (brackets == 0) {
+                    // console.log("start: " + start + ", end: " + i)
+                    // HACK: I dont know why but this MUST be written this way
+                    // to work properly
+                    let match = str.substring(start, i)
+                    match = match.substring(2)
+
+                    // console.log("found match: " + match)
+                    matches.push({
+                        start: start,
+                        end: i + 1,
+                        inner: match
+                    })
+                    searching = false
+                }
+            }
+        } else {
+            if (c == '$') {
+                searching = true
+                brackets = 0
+                start = i;
+            }
+        }
+    }
+    return matches
+}
+
+function dawnRoundUp(num) {
+    let precision = 0;
+    precision = Math.pow(10, precision)
+    return Math.ceil(num * precision) / precision
+}
+
+function dawnMath(str) {
+    const value = Function(`'use strict'; return (${str})`)()
+    return dawnRoundUp(value)
+}
+
+function dawnParse(str, opts) {
+    if (typeof str === 'number') return str;
+    if (str.length == 0) {
+        return 0;
+        // return { "ok": "0" };
+        // return { "err": "Empty String" };
+    }
+
+    let output = ""
+    let start = 0;
+
+    // look for the escape sequence
+    // const matches = str.match(/\$\[[^6]*\]/g);
+    const matches = dawnMatch(str)
+
+    for (m in matches) {
+        const match = matches[m];
+        const inner = match.inner;
+
+        // console.log("match: " + inner);
+
+        let replace;
+        if (opts[inner] != null) {
+            replace = opts[inner]
+        } else {
+            replace = dawnParse(inner, opts)
+            // if (resu["ok"] != null) replace = resu["ok"]
+            // else return resu;
+        }
+        // TODO: this code now needs to be fixed
+        // output = output.replace(/\$\[[^8]*\]/, replace);
+
+        output = output + str.substring(start, match.start) + replace;
+        start = match.end
+
+        // console.log("output: " + output + ", start: " + start);
+    }
+
+    output = output + str.substring(start);
+    // console.log("output: " + output + ", start: " + start);
+
+    try {
+        return dawnMath(output);
+        // return { "ok": ret };
+    } catch (e) {
+        return "\%Syntax Error\%"
+        // return { "err": "\%Syntax Error\%" }
+    }
+}
+
+// ------------------------ end DawnMath.js ------------------------------------
+
 let data;
 
-function savedata() {
-    if (typeof data == "undefined") return;
+let estats;
+let eskills; 
 
-    var a = window.document.createElement('a');
-    a.href = window.URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
-
-    // TODO: change file name to character name
-    a.download = 'character.json';
-
-    console.log("saving file");
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+function preprocessBundle() {
+    let atributes = data.atributes;
+    for (feild in atributes) {
+        atributes[feild] = dawnParse(atributes[feild], atributes)
+    }
 }
 
-function usetemplate() {
-    fetch("/template.json").then((tmpl) => {
-        tmpl.json().then((d) => {
-            data = d
-            main()
-        })
-    })
-}
+// loadBundle()
+function main() {
+    preprocessBundle();
 
-const main = function () {
-    const estats = document.getElementById("stats");
+    // clears existing content
+    estats.innerHTML = "";
+    eskills.innerHTML = "";
+
 
     for (const feild in data.atributes) {
         const statbox = document.createElement("div");
@@ -33,7 +142,7 @@ const main = function () {
 
         let v;
         if (typeof data.atributes[feild] == "string") {
-            v = parse(data.atributes[feild])
+            v = dawnMath(data.atributes[feild])
         } else {
             v = data.atributes[feild]
         }
@@ -43,8 +152,6 @@ const main = function () {
 
         estats.appendChild(statbox);
     }
-
-    const eskills = document.getElementById("skills");
 
     for (const name in data.skills) {
         const skillbox = document.createElement("div");
@@ -86,21 +193,44 @@ const main = function () {
     }
 }
 
-function parse(str) {
-    return Function(`'use strict'; return (${str})`)()
-}
-
 window.addEventListener('load', function () {
+    estats = document.getElementById("stats");
+    eskills = document.getElementById("skills");
+
     const inputfile = document.getElementById("inputfile");
     inputfile.addEventListener("change", () => {
-        // if (inputfile.files.length == 1) { console.log("File selected: ", inputfile.files[0]); }
+        if (inputfile.files.length != 1) { console.log("Selecte only 1 file."); return; }
+
         var reader = new FileReader();
         reader.onload = function() {
-            const obj = JSON.parse(reader.result);
-            // console.log("new input: " + obj);
-            data = obj;
+            data = JSON.parse(reader.result);
             main();
         };
         reader.readAsText(inputfile.files[0]);
     });
 })
+
+// 000000000000000000000000 Button Functions 0000000000000000000000000000000000
+function usetemplate() {
+    fetch("/template.json").then((tmpl) => {
+        tmpl.json().then((d) => {
+            data = d
+            main()
+        })
+    })
+}
+
+function savedata() {
+    if (typeof data == "undefined") return;
+
+    var a = window.document.createElement('a');
+    a.href = window.URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
+
+    // TODO: change file name to character name
+    a.download = 'character.json';
+
+    console.log("saving file");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}

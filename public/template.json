@@ -1,14 +1,15 @@
 {
     "name": "Rapheal Augirre",
     "atributes": {
+        "Tier": 1,
         "Body": 4,
-        "Talent": 3,
+        "Talent": 2,
         "Spirit": 3,
-        "Mind": 3,
-        "Grit": "4 + 1",
-        "Health": "2 * 4 + 2 * 1",
-        "Speed": "2 + 2 / 2",
-        "Focus": "1 + 3 / 2"
+        "Mind": 2,
+        "Grit": "$[Body] + 1",
+        "Health": "2 * $[Body] + 2 * $[Tier]",
+        "Speed": "2 + $[Talent] / 2",
+        "Focus": "1 + $[Spirit] / 2"
     },
     "ability":  {
         "points": 4,
@@ -23,7 +24,7 @@
         "Dual Wielder": {
             "level": 3,
             "type": "Powerhouse",
-            "skills": [ 
+            "skills": [
                 "Twinned Blow: When you Skirmish targeting one character, you may “Flurry”, repeating the Attack with Swift at no cost. This reduces the dice rolled for both to half (before Advantage/Disadvantage).",
                 "Frenzied Barrage: When you spend 2 or more Focus on a Finisher, you may substitute it with three Swift Skirmishes that roll half their base dice (before applying Advantage/Disadvantage) used one after another (these skirmishes cannot trigger “Twinned Blow”).",
                 "Varied Blades: Your Skirmishes have an additional two effects that alternate every time you use Skirmish, resetting at the start of your Turn. The first Skirmish is *Astral: Gain [Tier / 2] Focus*, second is *Vorpal: Restore [Tier / 2] Health*, third is Astral again."
