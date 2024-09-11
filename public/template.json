@@ -1,26 +1,26 @@
 {
-    "name": "<img src=\"https://thispersondoesnotexist.com/\" \\>",
     "name": "Rapheal Augirre",
-    "atributes": {
-        "Tier": 1,
-        "Body": 4,
-        "Talent": 2,
-        "Spirit": 3,
-        "Mind": 2,
-        "Grit": "$[Body] + 1",
-        "Health": "2 * $[Body] + 2 * $[Tier]",
-        "Speed": "2 + $[Talent] / 2",
-        "Focus": "1 + $[Spirit] / 2"
-    },
+    "version": "v1",
+    "atributes": [
+        { "name": "Tier", "score": 1 },
+        { "name": "Body", "score": 4 },
+        { "name": "Talent", "score": 2 },
+        { "name": "Spirit", "score": 3 },
+        { "name": "Mind", "score": 2 },
+        { "name": "Grit", "score": "$[Body] + 1" },
+        { "name": "Health", "score": "2 * $[Body] + 2 * $[Tier]" },
+        { "name": "Speed", "score": "2 + $[Talent] / 2" },
+        { "name": "Focus", "score": "1 + $[Spirit] / 2" }
+    ],
     "ability":  {
         "points": 4,
         "desc": "You can transform the four elements into plants so long as you hold your breath."
     },
-    "skills": {
-        "Invincible Under the Sun": 1,
-        "Unthinking Instinct": 1,
-        "Water Dwelling": 2
-    },
+    "skills": [
+        { "name": "Invincible Under the Sun", "score": 1 },
+        { "name": "Unthinking Instinct", "score": 1 },
+        { "name": "Water Dwelling", "score": 2 }
+    ],
     "techniques": [
         {
             "name": "Dual Wielder",

@@ -5,12 +5,12 @@
     <title>Opendawn</title>
     <meta name="description" content="Thinking for those who listen.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/style.css" rel="stylesheet">
     <script src="/main.js" async></script>
+    <link href="/style.css" rel="stylesheet">
     <link rel="icon" href="/opendawn.png" />
 </head>
 <body>
-    <header class="flexacross">
+    <header class="flexacross" style="margin: 4px;">
         <h2>Opendawn</h2>
         <label class="file-button">
             <input type="file" id="inputfile" style="display: none" accept="application/json">
@@ -28,22 +28,30 @@
         <div class="flexfill"></div>
         <p>Made by a "<em><a href="https://github.com/gingerfocus/openrpg">human</a></em>"</p>
     </header>
-    <main class="flexacross">
+    <main class="flexacross" style="height: 97vh">
         <div class="screen flexdown flexfill" style="width: 70vw">
             <div class="screen">
                 <div class="flexacross" id="stats" style="flex-wrap: wrap"></div>
             </div>
             <div class="screen">
-                <div class="flexdown" id="techniques"></div>
+                <div class="flexdown space-text" id="techniques"></div>
             </div>
             <div class="screen flexfill"></div>
         </div>
-        <div class="screen flexdown flexfill" style="width: 30vw; min-height: 100vh">
-            <div class="screen" id="playername"></div>
+        <div class="screen flexdown flexfill" style="width: 30vw; "> <!-- min-height: 100vh -->
+            <div class="screen">
+                <h1 id="playername"></h1>
+            </div>
             <div class="screen">
                 <div class="flexdown" id="skills"></div>
             </div>
             <div class="screen flexfill"></div>
+            <div class="screen">
+                <label for="edit-switch" class="gui-switch">
+                    Edit Mode
+                    <input type="checkbox" role="switch" id="edit-switch">
+                </label>
+            </div>
         </div>
     </main>
 </body>
