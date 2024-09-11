@@ -227,7 +227,7 @@ function loadBundleSkills() {
         skillbox.innerHTML =
             "<h2>" + skill.name + "</h2>" +
             "<div class=\"flexfill\"></div>" +
-            "<h2>" + skill.score + "</h2>";
+            "<h2><strong>" + skill.score + "</strong></h2>";
 
         skillbox.addEventListener("click", (_) => editSkill(skill))
 
@@ -247,9 +247,9 @@ function loadBundleAttributes() {
         let atribute = atributes[name]
 
         statbox.innerHTML =
-            "<h3>" + name + "</h3>" +
+            "<h2>" + name + "</h2>" +
             // "<div class=\"flexfill\"></div>" +
-            "<h3>" + atribute.value + "</h3>";
+            "<h2><strong>" + atribute.value + "</strong></h2>";
 
         statbox.addEventListener("click", (_) => editAttribute(data.atributes[atribute.index]))
 
