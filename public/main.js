@@ -22,8 +22,7 @@ function editAttribute(attr) {
     popupopen = true;
 
     const popup = document.createElement("div");
-    popup.classList.add("popup", "space-text")
-    popup.classList.add("screen")
+    popup.classList.add("popup", "space-text", "screen")
 
     const header = document.createElement("h1")
     header.contentEditable = true;
@@ -60,8 +59,7 @@ function editSkill(skill) {
     popupopen = true;
 
     const popup = document.createElement("div");
-    popup.classList.add("popup", "space-text")
-    popup.classList.add("screen")
+    popup.classList.add("popup", "space-text", "screen")
 
     const header = document.createElement("h1")
     header.contentEditable = true;
@@ -170,13 +168,12 @@ function preprocessAttributes() {
 }
 
 function loadBundleTechniquies() {
-    etechniques.innerHTML = ""
+    etechniques.replaceChildren()
 
     for (const t in data.techniques) {
         const technique = data.techniques[t];
 
         const techniquesbox = document.createElement("div");
-        // techniquesbox.classList.add("techniquesbox");
         techniquesbox.classList.add("screen", "flexdown");
 
         techniquesbox.addEventListener("click", (_) => editTechnique(technique))
@@ -192,22 +189,26 @@ function loadBundleTechniquies() {
             header.textContent = rank.name
             techniquesbox.appendChild(header);
 
-            let thing = ""
-            let start = 0
+            const desc = document.createElement("p");
             const matches = dawnMatch(rank.desc)
+
+            let start = 0
             for (m in matches) {
                 const match = matches[m]
-                // TODO: make some sort of hover thing for this bold 
-                const parsed = "<strong>" + dawnParse(match.inner, atributes) + "</strong>"
-                thing = thing + rank.desc.substring(start, match.start) + parsed
+
+                let textNode = document.createTextNode(rank.desc.substring(start, match.start))
+                desc.appendChild(textNode)
+
+                // TODO: make a hover element for this tag
+                let parsedResult = document.createElement("strong")
+                parsedResult.innerText = dawnParse(match.inner, atributes)
+                desc.appendChild(parsedResult)
+
                 start = match.end
             }
-            thing = thing + rank.desc.substring(start)
+            let textNode = document.createTextNode(rank.desc.substring(start))
+            desc.appendChild(textNode)
 
-            const desc = document.createElement("p");
-
-            // HACK: this can be used for XSS
-            desc.innerHTML = thing;
             techniquesbox.appendChild(desc);
         }
 
@@ -216,18 +217,28 @@ function loadBundleTechniquies() {
 }
 
 function loadBundleSkills() {
-    eskills.innerHTML = "";
+    eskills.replaceChildren();
 
     for (var i = 0; i < data.skills.length; i++) {
         const skill = data.skills[i];
         const skillbox = document.createElement("div");
-        // skillbox.classList.add("skillbox");
-        skillbox.classList.add("screen");
-        skillbox.classList.add("flexacross");
-        skillbox.innerHTML =
-            "<h2>" + skill.name + "</h2>" +
-            "<div class=\"flexfill\"></div>" +
-            "<h2><strong>" + skill.score + "</strong></h2>";
+        skillbox.classList.add("screen", "flexacross");
+
+        let nametag = document.createElement("h2")
+        nametag.innerText = skill.name
+        skillbox.appendChild(nametag)
+
+        let spacer = document.createElement("div")
+        spacer.classList.add("flexfill")
+        skillbox.appendChild(spacer)
+
+        let scoretag = document.createElement("h2")
+        let scorebold = document.createElement("strong")
+        scorebold.innerText = skill.score
+        scoretag.appendChild(scorebold)
+        skillbox.appendChild(scoretag)
+
+        nametag.innerText = skill.name
 
         skillbox.addEventListener("click", (_) => editSkill(skill))
 
@@ -236,19 +247,16 @@ function loadBundleSkills() {
 }
 
 function loadBundleAttributes() {
-    estats.innerHTML = "";
+    estats.replaceChildren();
 
     for (const name in atributes) {
         const statbox = document.createElement("div");
-        statbox.classList.add("screen");
-        statbox.classList.add("statbox");
-        statbox.classList.add("flexdown");
+        statbox.classList.add("screen", "statbox", "flexdown");
 
         let atribute = atributes[name]
 
         statbox.innerHTML =
             "<h2>" + name + "</h2>" +
-            // "<div class=\"flexfill\"></div>" +
             "<h2><strong>" + atribute.value + "</strong></h2>";
 
         statbox.addEventListener("click", (_) => editAttribute(data.atributes[atribute.index]))
@@ -257,9 +265,13 @@ function loadBundleAttributes() {
     }
 }
 
+let nameClickInstalled = false;
 function loadBundleName() {
     // clears existing content
     ename.innerText = data.name;
+    if (nameClickInstalled) return;
+
+    nameClickInstalled = true
     ename.onclick = (_) => {
         if (!editmode) return;
         if (popupopen) return;
@@ -267,8 +279,7 @@ function loadBundleName() {
         popupopen = true;
 
         const popup = document.createElement("div");
-        popup.classList.add("popup", "space-text")
-        popup.classList.add("screen")
+        popup.classList.add("popup", "space-text", "screen")
 
         const header = document.createElement("h1")
         header.contentEditable = true;
@@ -330,7 +341,7 @@ window.addEventListener('load', function () {
     });
 })
 
-// 000000000000000000000000 Button Functions 0000000000000000000000000000000000
+// 0000000000000000000000000 Button Functions 0000000000000000000000000000000000
 function usetemplate() {
     fetch("/template.json").then((tmpl) => {
         tmpl.json().then((d) => {
@@ -380,17 +391,15 @@ function dawnMatch(str) {
 
     for (var i = 0; i < str.length; i++) {
         const c = str[i];
-        // console.log("char: " + c + ", i: " + i)
         if (searching) {
             if (c == '[') brackets += 1
 
             if (c == ']') {
                 brackets -= 1
-                // TODO: check for underflow
-                // console.log("removing bracket (count: " + brackets + ")")
+                // if (brackets < 0) return "\%Match Error\%"
+                if (brackets < 0) { searching = false; continue; }
 
                 if (brackets == 0) {
-                    // console.log("start: " + start + ", end: " + i)
                     // HACK: I dont know why but this MUST be written this way
                     // to work properly
                     let match = str.substring(start, i)
@@ -417,12 +426,21 @@ function dawnMatch(str) {
     return matches
 }
 
-function dawnRoundUp(num) {
-    let precision = 0;
+/**
+ * Rounds up a number to the nearsest integet
+ * @param {number} num input number
+ * @returns {number} rounded result
+*/
+function dawnRoundUp(num, precision = 0) {
     precision = Math.pow(10, precision)
     return Math.ceil(num * precision) / precision
 }
 
+/**
+ * Evaluates a string to number using math
+ * @param {string} str the string to parse
+ * @returns {number} the result
+*/
 function dawnMath(str) {
     const value = Function(`'use strict'; return (${str})`)()
     return dawnRoundUp(value)
@@ -435,10 +453,8 @@ function dawnMath(str) {
  * @returns {number} the parsed result
 */
 function dawnParse(input, opts) {
-    /** @const {string} */
-    let str;
     if (typeof input === 'number') return input;
-    else str = input;
+    let str = input;
 
     if (str.length == 0) { return 0; }
 
