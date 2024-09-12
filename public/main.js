@@ -1,5 +1,77 @@
-// Of note this page has lots of XSS vulurabilities due to innerHTML but that 
-// alright. :)
+// ------ Source: https://github.com/remy/min.js/blob/master/dist/%24.js -------
+
+$ = (function (document, window, $) {
+  // Node covers all elements, but also the document objects
+  var node = Node.prototype,
+      nodeList = NodeList.prototype,
+      forEach = 'forEach',
+      trigger = 'trigger',
+      each = [][forEach],
+      // note: createElement requires a string in Firefox
+      dummy = document.createElement('i');
+
+  nodeList[forEach] = each;
+
+  // we have to explicitly add a window.on as it's not included
+  // in the Node object.
+  window.on = node.on = function (event, fn) {
+    this.addEventListener(event, fn, false);
+
+    // allow for chaining
+    return this;
+  };
+
+  nodeList.on = function (event, fn) {
+    this[forEach](function (el) {
+      el.on(event, fn);
+    });
+    return this;
+  };
+
+  // we save a few bytes (but none really in compression)
+  // by using [trigger] - really it's for consistency in the
+  // source code.
+  window[trigger] = node[trigger] = function (type, data) {
+    // construct an HTML event. This could have
+    // been a real custom event
+    var event = document.createEvent('HTMLEvents');
+    event.bubbles = true
+    event.cancelable = true
+    event.type = type;
+    event.data = data || {};
+    event.eventName = type;
+    event.target = this;
+    this.dispatchEvent(event);
+    return this;
+  };
+
+  nodeList[trigger] = function (event) {
+    this[forEach](function (el) {
+      el[trigger](event);
+    });
+    return this;
+  };
+
+  $ = function (s) {
+    // querySelectorAll requires a string with a length
+    // otherwise it throws an exception
+    var r = document.querySelectorAll(s || '☺'),
+        length = r.length;
+    // if we have a single element, just return that.
+    // if there's no matched elements, return a nodeList to chain from
+    // else return the NodeList collection from qSA
+    return length == 1 ? r[0] : r;
+  };
+
+  // $.on and $.trigger allow for pub/sub type global
+  // custom events.
+  $.on = node.on.bind(dummy);
+  $[trigger] = node[trigger].bind(dummy);
+
+  return $;
+})(document, this);
+
+// ---- End Source: https://github.com/remy/min.js/blob/master/dist/%24.js -----
 
 let data;
 
@@ -14,86 +86,98 @@ let ebody;
 
 let eswitch;
 
-// TODO: I think this is mostly the same code as `editSkill`
-function editAttribute(attr) {
+let editState = {
+    popupRoot: null,
+    reloadFn: () => {},
+    // the reason the binds and elements are stored differently as we want to 
+    // maintain a reference to the origonal object not make a new one and 
+    // merging them would result in a deep copy
+    bind: {},
+    elem: {}
+}
+
+function rebindObjectData(src, dst) {
+    for (const name in dst) {
+        const element = src[name]
+        if (element === undefined) continue
+
+        if (element.innerText != undefined) {
+            // assume it is a HTMLNode
+            dst[name] = element.innerText
+        } else {
+            // TODO: assert that element.length is not null and a number
+            // TODO: this could be rewritten to also handle objects by not recusing and rebinding here
+
+            // assume it is an array of more binds
+            for (var i = 0; i < element.length; i++) {
+                rebindObjectData(src[name][i], dst[name][i])
+            }
+        }
+
+    }
+}
+
+function editObject(object, reloadFn) {
     if (!editmode) return;
     if (popupopen) return;
 
     popupopen = true;
 
-    const popup = document.createElement("div");
-    popup.classList.add("popup", "space-text", "screen")
+    $('main').classList.add('background-blurred')
+    $('header').classList.add('background-blurred')
 
-    const header = document.createElement("h1")
-    header.contentEditable = true;
-    header.innerText = attr.name;
-    popup.appendChild(header)
-
-    const score = document.createElement("h1")
-    score.contentEditable = true;
-    score.innerText = attr.score;
-    popup.appendChild(score)
-
-    const save = document.createElement("button");
-    save.classList.add("file-button")
-    save.innerText = "Save"
-    save.onclick = (_) => {
-        attr.name = header.innerText;
-        attr.score = score.innerText;
-
-        ebody.removeChild(popup)
-        popupopen = false;
-
-        // reloads the whole ui
-        loadBundle()
-    }
-    popup.appendChild(save)
-
-    ebody.appendChild(popup)
-}
-
-function editSkill(skill) {
-    if (!editmode) return;
-    if (popupopen) return;
-
-    popupopen = true;
+    // NODE.dataset
 
     const popup = document.createElement("div");
     popup.classList.add("popup", "space-text", "screen")
 
-    const header = document.createElement("h1")
-    header.contentEditable = true;
-    header.innerText = skill.name;
-    popup.appendChild(header)
+    const elem = {}
+    for (const name in object) {
+        const item = document.createElement("h1")
+        item.contentEditable = true;
+        item.innerText = object[name];
 
-    const score = document.createElement("h1")
-    score.contentEditable = true;
-    score.innerText = skill.score;
-    popup.appendChild(score)
+        popup.appendChild(item)
+        elem[name] = item
+    }
 
     const save = document.createElement("button");
     save.classList.add("file-button")
     save.innerText = "Save"
-    save.onclick = (_) => {
-        skill.name = header.innerText;
-        skill.score = score.innerText;
 
-        ebody.removeChild(popup)
+    editState = {
+        popupRoot: popup,
+        reloadFn: reloadFn,
+        bind: object,
+        elem: elem
+    }
+
+    save.onclick = function onSave(__event) {
+        rebindObjectData(editState.elem, editState.bind)
+
+        ebody.removeChild(editState.popupRoot)
         popupopen = false;
 
-        // reloads the technique part of the ui
-        loadBundleSkills()
-    }
-    popup.appendChild(save)
+        $('main').classList.remove('background-blurred')
+        $('header').classList.remove('background-blurred')
 
+        // reloads the ui
+        editState.reloadFn()
+    }
+
+    popup.appendChild(save)
     ebody.appendChild(popup)
 }
 
+/// TODO: rewrite this to use the `editObject` function
 function editTechnique(technique) {
     if (!editmode) return;
     if (popupopen) return;
 
     popupopen = true;
+
+    $('main').classList.add('background-blurred')
+    $('header').classList.add('background-blurred')
 
     const popup = document.createElement("div");
     popup.classList.add("popup", "space-text", "screen")
@@ -103,7 +187,7 @@ function editTechnique(technique) {
     header.innerText = technique.name;
     popup.appendChild(header)
 
-    const level= document.createElement("h1")
+    const level = document.createElement("h1")
     level.contentEditable = true;
     level.innerText = technique.level;
     popup.appendChild(level)
@@ -135,6 +219,7 @@ function editTechnique(technique) {
         technique.name = header.innerText;
         technique.level = level.innerText;
 
+
         for (let i = 0; i < technique.skills.length; i++) {
             const skill = technique.skills[i]
             const element = elements[i]
@@ -142,6 +227,9 @@ function editTechnique(technique) {
             skill.name = element.name.innerText;
             skill.desc = element.desc.innerText;
         }
+
+        $('main').classList.remove('background-blurred')
+        $('header').classList.remove('background-blurred')
 
         ebody.removeChild(popup)
         popupopen = false;
@@ -179,7 +267,7 @@ function loadBundleTechniquies() {
         techniquesbox.addEventListener("click", (_) => editTechnique(technique))
 
         const name = document.createElement("h2");
-        name.innerHTML = technique.name;
+        name.innerText = technique.name;
         techniquesbox.appendChild(name);
 
         for (let i = 0; i < technique.level; i++) {
@@ -223,14 +311,11 @@ function loadBundleSkills() {
         const skill = data.skills[i];
         const skillbox = document.createElement("div");
         skillbox.classList.add("screen", "flexacross");
+        skillbox.style.justifyContent = 'space-between'
 
         let nametag = document.createElement("h2")
         nametag.innerText = skill.name
         skillbox.appendChild(nametag)
-
-        let spacer = document.createElement("div")
-        spacer.classList.add("flexfill")
-        skillbox.appendChild(spacer)
 
         let scoretag = document.createElement("h2")
         let scorebold = document.createElement("strong")
@@ -240,7 +325,7 @@ function loadBundleSkills() {
 
         nametag.innerText = skill.name
 
-        skillbox.addEventListener("click", (_) => editSkill(skill))
+        skillbox.addEventListener("click", (_) => editObject(skill, loadBundleSkills))
 
         eskills.appendChild(skillbox);
     }
@@ -253,55 +338,33 @@ function loadBundleAttributes() {
         const statbox = document.createElement("div");
         statbox.classList.add("screen", "statbox", "flexdown");
 
-        let atribute = atributes[name]
+        let nametag = document.createElement("h2")
+        nametag.innerText = name
+        statbox.appendChild(nametag)
 
-        statbox.innerHTML =
-            "<h2>" + name + "</h2>" +
-            "<h2><strong>" + atribute.value + "</strong></h2>";
+        let scoretag = document.createElement("h2")
+        let scorebold = document.createElement("strong")
+        scorebold.innerText = atributes[name].value
+        scoretag.appendChild(scorebold)
+        statbox.appendChild(scoretag)
 
-        statbox.addEventListener("click", (_) => editAttribute(data.atributes[atribute.index]))
+        // TODO: event can contain data. try emitting an event that has the 
+        // `.data` feild set to the binding and have a universal handler for 
+        // that event that catches it
+        statbox.addEventListener("click", (_) => editObject(data.atributes[atribute.index], loadBundle))
 
         estats.appendChild(statbox);
     }
 }
 
-let nameClickInstalled = false;
 function loadBundleName() {
-    // clears existing content
-    ename.innerText = data.name;
-    if (nameClickInstalled) return;
+    // backwards compat, remove after giving people some time to migrate
+    if (data.name && !data.character) { data.character = { name: data.name } }
 
-    nameClickInstalled = true
-    ename.onclick = (_) => {
-        if (!editmode) return;
-        if (popupopen) return;
+    const character = data.character
 
-        popupopen = true;
-
-        const popup = document.createElement("div");
-        popup.classList.add("popup", "space-text", "screen")
-
-        const header = document.createElement("h1")
-        header.contentEditable = true;
-        header.innerText = data.name
-        popup.appendChild(header)
-
-        const save = document.createElement("button");
-        save.classList.add("file-button")
-        save.innerText = "Save"
-        save.onclick = (_) => {
-            data.name = header.innerText
-
-            ebody.removeChild(popup)
-            popupopen = false;
-
-            // reloads the name in ui
-            ename.innerText = data.name
-        }
-        popup.appendChild(save)
-
-        ebody.appendChild(popup)
-    }
+    ename.innerText = character.name;
+    ename.onclick = (_) => { editObject(character, loadBundleName) }
 }
 
 function loadBundle() {
@@ -323,9 +386,10 @@ window.addEventListener('load', function () {
     ebody = document.querySelector("body")
 
     eswitch = document.getElementById("edit-switch")
-    eswitch.addEventListener("click", (_) => {
+
+    eswitch.addEventListener("click", (e) => {
         // if (popupopen) return;
-        editmode = eswitch.checked
+        editmode = e.target.checked
     });
 
     const inputfile = document.getElementById("inputfile");

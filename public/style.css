@@ -4,7 +4,10 @@
     box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 body {
+    font-family: "Source Code Pro", Monaco, Monospace;
     /* line-height:      1.2; */
 
     font-size:        14px;
@@ -17,6 +20,11 @@ body {
 
     min-height: 100vh;
     background: #000000;
+}
+
+.background-blurred {
+    transition: 1.5s;
+    filter: blur(8px);
 }
 
 .file-button {

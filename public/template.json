@@ -1,6 +1,8 @@
 {
-    "name": "Rapheal Augirre",
     "version": "v1",
+    "character": {
+        "name": "Rapheal Augirre"
+    },
     "atributes": [
         { "name": "Tier", "score": 1 },
         { "name": "Body", "score": 4 },
