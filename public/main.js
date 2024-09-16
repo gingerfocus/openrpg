@@ -84,7 +84,6 @@ let ename;
 let etechniques;
 let ebody;
 
-let eswitch;
 
 let editState = {
     popupRoot: null,
@@ -123,10 +122,9 @@ function editObject(object, reloadFn) {
 
     popupopen = true;
 
-    $('main').classList.add('background-blurred')
-    $('header').classList.add('background-blurred')
-
     // NODE.dataset
+
+    $('main').classList.add('background-blurred')
 
     const popup = document.createElement("div");
     popup.classList.add("popup", "space-text", "screen")
@@ -159,7 +157,6 @@ function editObject(object, reloadFn) {
         popupopen = false;
 
         $('main').classList.remove('background-blurred')
-        $('header').classList.remove('background-blurred')
 
         // reloads the ui
         editState.reloadFn()
@@ -177,7 +174,6 @@ function editTechnique(technique) {
     popupopen = true;
 
     $('main').classList.add('background-blurred')
-    $('header').classList.add('background-blurred')
 
     const popup = document.createElement("div");
     popup.classList.add("popup", "space-text", "screen")
@@ -219,7 +215,6 @@ function editTechnique(technique) {
         technique.name = header.innerText;
         technique.level = level.innerText;
 
-
         for (let i = 0; i < technique.skills.length; i++) {
             const skill = technique.skills[i]
             const element = elements[i]
@@ -229,7 +224,6 @@ function editTechnique(technique) {
         }
 
         $('main').classList.remove('background-blurred')
-        $('header').classList.remove('background-blurred')
 
         ebody.removeChild(popup)
         popupopen = false;
@@ -331,29 +325,33 @@ function loadBundleSkills() {
     }
 }
 
+// TODO: event can contain data. try emitting an event that has the 
+// `.data` feild set to the binding and have a universal handler for 
+// that event that catches it
+//
+// document.addEventListener("editobject", (e) => {
+//     const object = e.data.object;
+//     const reload = e.data.reload;
+//     editObject(object, reload)
+// })
+
 function loadBundleAttributes() {
     estats.replaceChildren();
 
     for (const name in atributes) {
-        const statbox = document.createElement("div");
-        statbox.classList.add("screen", "statbox", "flexdown");
+        const atribute = atributes[name]
 
-        let nametag = document.createElement("h2")
-        nametag.innerText = name
-        statbox.appendChild(nametag)
+        const template = document.getElementById('tscorecard');
+        // tscorecard
+        const clone = template.content.cloneNode(true);
+        let h2 = clone.querySelectorAll("h2");
+        h2[0].textContent = name;
+        // `firstChild` gets the bold element
+        h2[1].firstChild.textContent = atribute.value; 
 
-        let scoretag = document.createElement("h2")
-        let scorebold = document.createElement("strong")
-        scorebold.innerText = atributes[name].value
-        scoretag.appendChild(scorebold)
-        statbox.appendChild(scoretag)
+        clone.addEventListener("click", (_) => editObject(data.atributes[atribute.index], loadBundle))
 
-        // TODO: event can contain data. try emitting an event that has the 
-        // `.data` feild set to the binding and have a universal handler for 
-        // that event that catches it
-        statbox.addEventListener("click", (_) => editObject(data.atributes[atribute.index], loadBundle))
-
-        estats.appendChild(statbox);
+        estats.appendChild(clone);
     }
 }
 
@@ -368,6 +366,55 @@ function loadBundleName() {
 }
 
 function loadBundle() {
+    var _e;
+    if (_e = document.body.querySelector('#maincontent')) _e.remove();
+    if (_e = document.body.querySelector('#loginscreen')) _e.remove();
+
+    const template = document.getElementById('tmain');
+    const clone = template.content.cloneNode(true);
+    clone.id = 'maincontent'
+    document.body.appendChild(clone)
+
+    // ------------------------------------------------------------------------
+    const savefile = document.getElementById("savefile");
+    savefile.addEventListener("click", (_) => {
+        if (typeof data == "undefined") return;
+
+        var a = window.document.createElement('a');
+        a.href = window.URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
+
+        a.download = data.character.name + ".json"
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+
+    const cookiesavefile = document.getElementById("cookiesavefile");
+    cookiesavefile.addEventListener("click", (_) => {
+        if (typeof data == "undefined") return;
+
+        try {
+            window.localStorage.setItem("dawnthing", JSON.stringify(data))
+        } catch (e) {
+            console.error(e)
+        }
+    });
+    // ------------------------------------------------------------------------
+
+    estats = document.getElementById("stats");
+    eskills = document.getElementById("skills");
+    ename = document.getElementById("playername");
+    etechniques = document.getElementById("techniques");
+
+    ebody = this.document.body
+
+    const eswitch = document.getElementById("edit-switch")
+    eswitch.addEventListener("click", (e) => {
+        // if (popupopen) return;
+        editmode = e.target.checked
+    });
+
     preprocessAttributes();
 
     // reload all Ui elemets
@@ -377,23 +424,11 @@ function loadBundle() {
     loadBundleTechniquies()
 }
 
-window.addEventListener('load', function () {
-    estats = document.getElementById("stats");
-    eskills = document.getElementById("skills");
-    ename = document.getElementById("playername");
-    etechniques = document.getElementById("techniques");
+window.addEventListener('load', (_) => {
+    // ----------------------------- Button Inputs -----------------------------
 
-    ebody = document.querySelector("body")
-
-    eswitch = document.getElementById("edit-switch")
-
-    eswitch.addEventListener("click", (e) => {
-        // if (popupopen) return;
-        editmode = e.target.checked
-    });
-
-    const inputfile = document.getElementById("inputfile");
-    inputfile.addEventListener("change", () => {
+    const loadfile = document.getElementById("loadfile");
+    loadfile.addEventListener("change", (_) => {
         if (inputfile.files.length != 1) { console.log("Select only 1 file!"); return; }
 
         var reader = new FileReader();
@@ -403,30 +438,33 @@ window.addEventListener('load', function () {
         };
         reader.readAsText(inputfile.files[0]);
     });
-})
 
-// 0000000000000000000000000 Button Functions 0000000000000000000000000000000000
-function usetemplate() {
-    fetch("/template.json").then((tmpl) => {
-        tmpl.json().then((d) => {
-            data = d
+
+    const cookieloadfile = document.getElementById("cookieloadfile");
+    cookieloadfile.addEventListener("click", (_) => {
+        try {
+            const d = window.localStorage.getItem("dawnthing");
+            if (d == null) {
+                console.error("could not load thing")
+                return;
+            }
+            data = JSON.parse(d)
             loadBundle()
+        } catch (e) {
+            console.error(e)
+        }
+    });
+
+    const usetemplatefile = document.getElementById("usetemplatefile");
+    usetemplatefile.addEventListener("click", () => {
+        fetch("/template.json").then((tmpl) => {
+            tmpl.json().then((d) => {
+                data = d
+                loadBundle()
+            })
         })
     })
-}
-
-function savedata() {
-    if (typeof data == "undefined") return;
-
-    var a = window.document.createElement('a');
-    a.href = window.URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
-
-    a.download = data.name + ".json"
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
+})
 
 // ----------------------  begin DawnMath.js -----------------------------------
 

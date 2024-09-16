@@ -2,10 +2,13 @@
 
 A client suite for RPGs.
 
-## Packages
-Minced: A Dice rolling library based on DiceParser written in rust
-
 ## Dev
 ```bash
-python3 -m http.server
+gendoc public/docs/index.html docs/index.md
+python3 -m http.server -d public
+
+# OR
+
+nix run .#docs
+nix run .#serve
 ```

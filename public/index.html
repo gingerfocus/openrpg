@@ -1,59 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Opendawn</title>
-    <meta name="description" content="Dawn Character Sheet Viewer">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/main.js" async></script>
-    <link href="/style.css" rel="stylesheet">
-    <link rel="icon" href="/opendawn.png" />
-</head>
-<body>
-    <header class="flexacross" style="margin: 4px;">
-        <h1>Opendawn</h1>
-        <label class="file-button">
-            <input type="file" id="inputfile" style="display: none" accept="application/json">
-            <!-- accept="image/png, image/jpeg"> -->
-            Upload
-        </label>
-        <label class="file-button">
-            <button style="display: none" onclick="savedata()"></button>
-            Save
-        </label>
-        <label class="file-button">
-            <button style="display: none" onclick="usetemplate()"></button>
-            Use Template
-        </label>
-        <div class="flexfill"></div>
-        <p>Made by a "<em><a href="https://github.com/gingerfocus/openrpg">human</a></em>"</p>
-    </header>
-    <main class="flexacross" style="min-height: 97vh; flex-wrap: wrap;">
-        <div class="screen flexdown flexfill" style="width: min(100vw, 1200px)">
-            <div class="screen">
-                <div class="flexacross" id="stats" style="flex-wrap: wrap"></div>
-            </div>
-            <div class="screen">
-                <div class="flexdown space-text" id="techniques"></div>
-            </div>
-            <div class="screen flexfill"></div>
-        </div>
-        <div class="screen flexdown flexfill" style="width: 30vw;"> <!-- min-height: 100vh -->
-            <div class="screen">
-                <h1 id="playername"></h1>
-            </div>
-            <div class="screen">
-                <div class="flexdown" id="skills"></div>
-            </div>
-            <div class="screen flexfill"></div>
-            <div class="screen">
-                <label for="edit-switch" class="gui-switch">
-                    Edit Mode
-                    <input type="checkbox" role="switch" id="edit-switch">
-                </label>
+    <head>
+        <meta charset="UTF-8">
+        <title>Opendawn</title>
+        <meta name="description" content="Dawn Character Sheet Viewer">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/style.css" rel="stylesheet">
+        <link rel="icon" href="/opendawn.png" />
+        <script src="/main.js"></script>
+    </head>
+    <body>
+        <!-- <div id="grad"></div> -->
+        <div id="loginscreen">
+            <div class="flexdown intropage">
+                <h1>Opendawn</h1>
+
+                <label class="file-button" for="loadfile">Load File</label>
+                <input type="file" style="display: none" accept="application/json" id="loadfile">
+
+                <label class="file-button" for="usetemplatefile">Load Template</label>
+                <button style="display: none" id="usetemplatefile"></button>
+
+                <label class="file-button" for="cookieloadfile">Load Cookie</label>
+                <button style="display: none" id="cookieloadfile"></button>
+
+                <a class="file-button" href="/docs">Open Documentation</a>
+                <a class="file-button" href="https://github.com/gingerfocus/openrpg">Open Source Code</a>
             </div>
         </div>
-    </main>
-</body>
+
+        <template id="tscreen">
+            <fieldset class="screen">
+                <legend></legend>
+            </fieldset>
+        </template>
+
+        <template id="tscorecard">
+            <div class="screen statbox flexdown">
+                <h2></h2>
+                <h2><strong></strong></h2>
+            </div>
+        </template>
+
+        <template id="tmain">
+            <main class="flexacross" style="height: 100vh; flex-wrap: wrap;">
+                <div class="screen flexdown flexfill" style="width: min(100vw, 1200px)">
+                    <fieldset class="screen">
+                        <legend>Stats</legend>
+                        <div class="flexacross" id="stats" style="flex-wrap: wrap"></div>
+                    </fieldset>
+                    <fieldset class="screen">
+                        <legend>Techniques</legend>
+                        <div class="flexdown space-text" id="techniques"></div>
+                    </fieldset>
+                    <div class="screen flexfill"></div>
+                </div>
+                <div class="screen flexdown flexfill" style="min-width: 30vw;">
+                    <fieldset class="screen">
+                        <legend>Name</legend>
+                        <h1 id="playername"></h1>
+                    </fieldset>
+                    <fieldset class="screen">
+                        <legend>Skills</legend>
+                        <div class="flexdown" id="skills"></div>
+                    </fieldset>
+                    <div class="screen flexfill"></div>
+
+                    <fieldset class="screen flexdown">
+                        <legend>Config</legend>
+                        <label for="edit-switch" class="gui-switch">
+                            Edit Mode
+                            <input type="checkbox" role="switch" id="edit-switch">
+                        </label>
+
+                        <label class="file-button" for="savefile">Save To File</label>
+                        <button style="display: none" id="savefile"></button>
+
+                        <label class="file-button" for="cookiesavefile">Save To Cookie</label>
+                        <button style="display: none" id="cookiesavefile"></button>
+                    </fieldset>
+                </div>
+            </main>
+        </template>
+    </body>
 </html>
 

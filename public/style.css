@@ -16,10 +16,48 @@ body {
 
     /* border: 10px ridge #f00; */
 
-    color: #f0f8ff; 
+    color: #f0f8ff;
 
     min-height: 100vh;
     background: #000000;
+}
+
+#loginscreen {
+    display: flex; 
+    justify-content: center;
+}
+
+.intropage {
+    font-size: 2.5rem;
+    /* padding: 70px; */
+    width: 30vw;
+    margin: 70px;
+    /* flex-wrap: wrap; */
+    /* align-items: center; */
+    /* box-sizing: border-box; */
+
+    /* display: flex;  */
+    /* flex-direction: column;  */
+    row-gap: 2rem;
+
+    & > h1 {
+        font-size: 3rem;
+    }
+}
+
+#grad {
+    z-index: -99;
+    position: absolute;
+    width: 100vw;
+    height: 155vh;
+    /* left: 5vw; */
+    top: -55vh;
+
+    /* background-image: linear-gradient(to right, rgba(0,0,60,0.1), rgba(180,80,0,0.6)); */
+
+    /* background-image: radial-gradient(circle, rgba(0, 100, 20, 0.8), #000000); */
+    /* background-image: radial-gradient(200px 100px at 50% 0%,#131f33 20%,#131e3100) */
+    background-image: radial-gradient(500px 200px at 50% 0%,#131f33 20%,#131e3100);
 }
 
 .background-blurred {
@@ -43,8 +81,11 @@ h1 { font-size: 2rem; margin:0px; line-height: 2rem; color: #005050; }
 h2 { font-size: 1.6rem; margin:0px; line-height: 1.6rem; color: #009090; }
 h3 { font-size: 1.2rem; margin:0px; line-height: 1.2rem; color: #00C0C0; }
 
-p { font-size:17px; margin-bottom:0px; margin-top: 0px;
-    text-shadow:      1px 1px 2px #0000f0f1, -1px -2px 3px #f06000f1;
+p {
+    font-size: 17px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    text-shadow: 1px 1px 2px #0000f0f1, -1px -2px 3px #f06000f1;
 }
 
 strong { color: #f24bb2; }
@@ -67,6 +108,13 @@ strong { color: #f24bb2; }
         /* border-color: pink; */
         border-color: #006060; 
     }
+
+    /* position: relative; */
+}
+
+legend {
+    font-size: 1.5rem;
+    padding: 0 20px 0 20px;
 }
 
 /* classes used on many things */
