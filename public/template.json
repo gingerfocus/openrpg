@@ -1,5 +1,6 @@
 {
     "version": "v1",
+    "autoload": true,
     "character": {
         "name": "Rapheal Augirre"
     },
