@@ -1,0 +1,36 @@
+{
+    "version": "v1",
+    "name": "New Character",
+    "@core/stats": [
+        { "name": "STR", "score": 10 },
+        { "name": "DEX", "score": 10 },
+        { "name": "CON", "score": 10 },
+        { "name": "INT", "score": 10 },
+        { "name": "WIS", "score": 10 },
+        { "name": "CHA", "score": 10 }
+    ],
+    "@core/inventory": {
+        "items": [
+            {
+                "name": "gold",
+                "count": 25,
+                "slot": 0
+            }
+        ],
+        "maximum": 10
+    },
+    "@focus/shadowdark": {
+        "level": 1,
+        "ancestry": "",
+        "class": "",
+        "title": "",
+        "alignment": "",
+        "background": "",
+        "deity": "",
+        "maxHitPoints": 0,
+        "armorClass": 10,
+        "attacks": [],
+        "spells": {},
+        "languages": "Common"
+    }
+}

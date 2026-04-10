@@ -1,0 +1,85 @@
+{
+    "version": "v1",
+    "name": "New Dawn Character",
+    "layout": {
+        "container": "flex flex-row gap-4 flex-wrap h-screen",
+        "column": "border-2 border-white rounded-lg p-2 flex flex-col gap-4 flex-1",
+        "panes": [
+            {
+                "id": "stats",
+                "title": "Stats",
+                "hook": "dawn.renderAttributes",
+                "containerClasses": "flex flex-row gap-4 flex-wrap",
+                "itemClasses": "border-2 border-white rounded-lg p-2 flex flex-col gap-2 w-32 h-24 text-center"
+            },
+            {
+                "id": "skills",
+                "title": "Class Features",
+                "hook": "dawn.renderSkills",
+                "containerClasses": "flex flex-col gap-1",
+                "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-row justify-between"
+            },
+            {
+                "id": "techniques",
+                "title": "Techniques",
+                "hook": "dawn.renderTechniques",
+                "containerClasses": "flex flex-col gap-1",
+                "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-col gap-1"
+            },
+            {
+                "id": "inventory",
+                "title": "Inventory",
+                "hook": "openrpg.renderInventory",
+                "containerClasses": "flex flex-col gap-4"
+            }
+        ]
+    },
+    "@core/stats": [
+        { "name": "Tier", "score": 1 },
+        { "name": "Body", "score": 4 },
+        { "name": "Talent", "score": 2 },
+        { "name": "Spirit", "score": 3 },
+        { "name": "Mind", "score": 2 },
+        { "name": "Grit", "score": "$[Body] + 1" },
+        { "name": "Health", "score": "2 * $[Body] + 2 * $[Tier]" },
+        { "name": "Speed", "score": "2 + $[Talent] / 2" },
+        { "name": "Focus", "score": "1 + $[Spirit] / 2" }
+    ],
+    "@core/inventory": {
+        "currency": { "gold": 0, "silver": 0, "copper": 0 },
+        "items": [],
+        "slots": { "total": 10 }
+    },
+    "@focus/dawn": {
+        "skills": [
+            { "name": "Invincible Under the Sun", "score": 1 },
+            { "name": "Unthinking Instinct", "score": 1 },
+            { "name": "Water Dwelling", "score": 2 }
+        ],
+        "techniques": [
+            {
+                "name": "Dual Wielder",
+                "level": 3,
+                "type": "Powerhouse",
+                "skills": [
+                    {
+                        "name": "Twinned Blow",
+                        "desc": "When you Skirmish targeting one character, you may 'Flurry', repeating the Attack with Swift at no cost."
+                    },
+                    {
+                        "name": "Frenzied Barrage",
+                        "desc": "When you spend 2 or more Focus on a Finisher, you may substitute it with three Swift Skirmishes."
+                    },
+                    {
+                        "name": "Varied Blades",
+                        "desc": "Your Skirmishes have an additional two effects that alternate every time you use Skirmish."
+                    }
+                ]
+            }
+        ],
+        "ability": {
+            "points": 4,
+            "desc": "You can transform the four elements into plants so long as you hold your breath."
+        }
+    }
+}

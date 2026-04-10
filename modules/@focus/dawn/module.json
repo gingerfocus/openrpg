@@ -1,0 +1,7 @@
+{
+  "id": "@focus/dawn",
+  "name": "Dawn Core",
+  "version": "0.1.0",
+  "description": "Base Dawn RPG system with attributes, skills, and techniques",
+  "author": "Focus"
+}

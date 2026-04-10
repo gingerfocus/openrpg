@@ -1,7 +1,4 @@
-/DiceParser
-/.firebase
-/.idx
-/public/docs
-/node_modules
-/.vscode
-/.svelte-kit
+
+# sub project
+dice-parser
+openrpg-server
