@@ -10,14 +10,9 @@
         { "name": "CHA", "score": 10 }
     ],
     "@core/inventory": {
-        "items": [
-            {
-                "name": "gold",
-                "count": 25,
-                "slot": 0
-            }
-        ],
-        "maximum": 10
+        "currency": { "gold": 25, "silver": 0, "copper": 0 },
+        "items": [],
+        "slots": { "total": 10 }
     },
     "@focus/shadowdark": {
         "level": 1,

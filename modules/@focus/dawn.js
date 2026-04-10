@@ -7,11 +7,11 @@ let moduleData;
 // ----------------------  Plugin Data Helpers -----------------------------------
 
 function getDawnData(data) {
-    return OpenRPG.getPluginData(data, NAME);
+    return OpenRpg.getPluginData(data, NAME);
 }
 
 function setDawnData(data, dawnData) {
-    OpenRPG.setPluginData(data, NAME, dawnData);
+    OpenRpg.setPluginData(data, NAME, dawnData);
 }
 
 // ----------------------  Module Hooks -----------------------------------
@@ -24,7 +24,7 @@ function preprocessAttributes(data) {
     for (var i = 0; i < dawnData.attributes.length; i++) {
         const attribute = dawnData.attributes[i]
         attributes[attribute.name] = {
-            value: dawnParse(attribute.score, attributes),
+            value: OpenRpgMath.dawnParse(attribute.score, attributes),
             index: i,
         }
     }
@@ -108,17 +108,17 @@ function renderTechniques(container, data, editCallback, args) {
             techniquesbox.appendChild(header);
 
             const desc = document.createElement("p");
-            const matches = dawnMatch(rank.desc)
+            const matches = OpenRpgMath.dawnMatch(rank.desc)
 
             let start = 0
-            for (m in matches) {
+            for (let m in matches) {
                 const match = matches[m]
 
                 let textNode = document.createTextNode(rank.desc.substring(start, match.start))
                 desc.appendChild(textNode)
 
                 let parsedResult = document.createElement("strong")
-                parsedResult.innerText = dawnParse(match.inner, attributes)
+                parsedResult.innerText = OpenRpgMath.dawnParse(match.inner, attributes)
                 desc.appendChild(parsedResult)
 
                 start = match.end
@@ -135,8 +135,8 @@ function renderTechniques(container, data, editCallback, args) {
 
 // ----------------------  Module Registration -----------------------------------
 
-OpenRPG.register('dawn.renderSkills', renderSkills);
-OpenRPG.register('dawn.renderTechniques', renderTechniques);
+OpenRpg.register('dawn.renderSkills', renderSkills);
+OpenRpg.register('dawn.renderTechniques', renderTechniques);
 
 
 

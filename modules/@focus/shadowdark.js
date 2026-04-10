@@ -9,9 +9,9 @@ function initCharacter(data) {
         if (!data.stats[stat]) data.stats[stat] = 10;
     });
 
-    const extra = OpenRPG.getPluginData(data, '@focus/shadowdark');
+    const extra = OpenRpg.getPluginData(data, '@focus/shadowdark');
     if (!extra) {
-        OpenRPG.setPluginData(data, '@focus/shadowdark', {
+        OpenRpg.setPluginData(data, '@focus/shadowdark', {
             ancestry: '',
             class: '',
             level: 1,
@@ -37,7 +37,7 @@ function getStatsModifier(stat) {
 function renderStats(container, data, editCallback) {
     container.replaceChildren();
 
-    const extra = OpenRPG.getPluginData(data, '@gingerfocus/shadowdark');
+    const extra = OpenRpg.getPluginData(data, '@gingerfocus/shadowdark');
     const stats = data.stats || {};
     const level = extra?.level || 1;
     const hp = extra?.maxHitPoints || 0;
@@ -103,7 +103,7 @@ function renderStats(container, data, editCallback) {
 function renderClassFeatures(container, data, editCallback) {
     container.replaceChildren();
     
-    const extra = OpenRPG.getPluginData(data, '@gingerfocus/shadowdark');
+    const extra = OpenRpg.getPluginData(data, '@gingerfocus/shadowdark');
     if (!extra) {
         container.innerHTML = '<p class="text-gray-500">No class data</p>';
         return;
@@ -150,13 +150,13 @@ function renderClassFeatures(container, data, editCallback) {
     }
 }
 
-OpenRPG.registerHook('dawn.initCharacter', initCharacter);
-OpenRPG.registerHook('shadowdark.initCharacter', initCharacter);
-OpenRPG.registerHook('openrpg.initCharacter', initCharacter);
+OpenRpg.registerHook('dawn.initCharacter', initCharacter);
+OpenRpg.registerHook('shadowdark.initCharacter', initCharacter);
+OpenRpg.registerHook('openrpg.initCharacter', initCharacter);
 
-OpenRPG.registerHook('dawn.renderAttributes', renderStats);
-OpenRPG.registerHook('shadowdark.renderStats', renderStats);
+OpenRpg.registerHook('dawn.renderAttributes', renderStats);
+OpenRpg.registerHook('shadowdark.renderStats', renderStats);
 
-OpenRPG.registerHook('dawn.renderSkills', renderClassFeatures);
-OpenRPG.registerHook('shadowdark.renderClassFeatures', renderClassFeatures);
+OpenRpg.registerHook('dawn.renderSkills', renderClassFeatures);
+OpenRpg.registerHook('shadowdark.renderClassFeatures', renderClassFeatures);
 

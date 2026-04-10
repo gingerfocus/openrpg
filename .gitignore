@@ -1,4 +1,7 @@
-
-# sub project
-dice-parser
+# binary
 openrpg-server
+openrpg
+
+# Things
+/.envrc
+/.direnv

@@ -1,7 +1,0 @@
-{
-  "id": "@core/inventory",
-  "name": "Inventory System",
-  "version": "1.0.0",
-  "description": "Shared inventory and currency system for RPG characters",
-  "author": "gingerfocus"
-}

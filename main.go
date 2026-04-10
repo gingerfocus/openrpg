@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -33,7 +34,7 @@ type ModuleInfo struct {
 	Author      string `json:"author"`
 }
 
-var modulesPath string
+var modulesPath = "./modules"
 
 func main() {
 	modulesPath = os.Getenv("MODULES_PATH")
@@ -55,9 +56,7 @@ func main() {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/modules", listModules)
-		r.Get("/modules/{id}", getModule)
-		r.Get("/modules/{id}/download", downloadModule)
-		r.Get("/modules/{id}/template", getTemplate)
+		r.Get("/modules/*", handleModuleAction)
 	})
 
 	r.Handle("/*", http.StripPrefix("", http.FileServer(http.Dir("public"))))
@@ -73,80 +72,44 @@ func main() {
 }
 
 func listModules(w http.ResponseWriter, r *http.Request) {
-	entries, err := os.ReadDir(modulesPath)
-	if err != nil {
-		http.Error(w, "Failed to read modules", 500)
-		return
-	}
-
-	var modules []ModuleInfo
-	for _, entry := range entries {
-		if !entry.IsDir() {
-			continue
-		}
-
-		manifestPath := filepath.Join(modulesPath, entry.Name(), "module.json")
-		data, err := os.ReadFile(manifestPath)
-		if err != nil {
-			continue
-		}
-
-		var m Module
-		if err := json.Unmarshal(data, &m); err != nil {
-			continue
-		}
-
-		modules = append(modules, ModuleInfo{
-			ID:          m.ID,
-			Name:        m.Name,
-			Version:     m.Version,
-			Description: m.Description,
-			Author:      m.Author,
-		})
-	}
-
-	json.NewEncoder(w).Encode(ModuleListResponse{Modules: modules})
-}
-
-func getModule(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	manifestPath := filepath.Join(modulesPath, id, "module.json")
-
+	manifestPath := filepath.Join(modulesPath, "manifest.json")
 	data, err := os.ReadFile(manifestPath)
 	if err != nil {
-		http.Error(w, "Module not found", 404)
+		http.Error(w, "Failed to read manifest.json", 500)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	var resp ModuleListResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
+		http.Error(w, "Failed to parse manifest.json", 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(resp)
 }
 
-func downloadModule(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	bundlePath := filepath.Join(modulesPath, id, "bundle.js")
+func handleModuleAction(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/api/modules/")
+	parts := strings.SplitN(path, "/", 2)
+	if len(parts) < 2 {
+		http.Error(w, "Invalid path", 400)
+		return
+	}
+	id := parts[0] + "/" + parts[1]
 
-	data, err := os.ReadFile(bundlePath)
+	filePath := filepath.Join(modulesPath, id+".js")
+	if _, err := os.Stat(filePath); err != nil {
+		http.Error(w, "Not found", 404)
+		return
+	}
+
+	data, err := os.ReadFile(filePath)
 	if err != nil {
-		http.Error(w, "Bundle not found", 404)
+		http.Error(w, "Failed to read file", 500)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/javascript")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s-bundle.js", id))
-	w.Write(data)
-}
-
-func getTemplate(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	templatePath := filepath.Join(modulesPath, id, "template.json")
-
-	data, err := os.ReadFile(templatePath)
-	if err != nil {
-		http.Error(w, "Template not found", 404)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.js", id))
 	w.Write(data)
 }
