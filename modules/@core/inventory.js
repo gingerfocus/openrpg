@@ -3,6 +3,8 @@
 
 (function() {
     function renderInventory(container, data, editCallback) {
+        console.log("running render function")
+
         container.replaceChildren();
 
         const currencySection = document.createElement('div');
@@ -64,5 +66,5 @@
         container.appendChild(inventorySection);
     }
 
-    OpenRpg.registerHook('openrpg.renderInventory', renderInventory);
+    OpenRpg.register('openrpg.renderInventory', renderInventory);
 })();

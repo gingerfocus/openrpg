@@ -2,6 +2,7 @@
 openrpg-server
 openrpg
 
-# Things
+# Bloat
 /.envrc
 /.direnv
+/AGENTS.md

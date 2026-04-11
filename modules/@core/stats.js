@@ -64,5 +64,5 @@
         container.appendChild(inventorySection);
     }
 
-    OpenRpg.registerHook('openrpg.renderInventory', renderInventory);
+    OpenRpg.register('openrpg.renderInventory', renderInventory);
 })();

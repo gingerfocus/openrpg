@@ -1,6 +1,39 @@
 {
     "version": "v1",
     "name": "New Character",
+    "layout": {
+        "container": "flex flex-row gap-4 flex-wrap h-screen",
+        "column": "border-2 border-white rounded-lg p-2 flex flex-col gap-4 flex-1",
+        "panes": [
+            {
+                "id": "stats",
+                "title": "Stats",
+                "hook": "dawn.renderAttributes",
+                "containerClasses": "flex flex-row gap-4 flex-wrap",
+                "itemClasses": "border-2 border-white rounded-lg p-2 flex flex-col gap-2 w-32 h-24 text-center"
+            },
+            {
+                "id": "skills",
+                "title": "Class Features",
+                "hook": "dawn.renderSkills",
+                "containerClasses": "flex flex-col gap-1",
+                "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-row justify-between"
+            },
+            {
+                "id": "techniques",
+                "title": "Techniques",
+                "hook": "dawn.renderTechniques",
+                "containerClasses": "flex flex-col gap-1",
+                "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-col gap-1"
+            },
+            {
+                "id": "inventory",
+                "title": "Inventory",
+                "hook": "openrpg.renderInventory",
+                "containerClasses": "flex flex-col gap-4"
+            }
+        ]
+    },
     "@core/stats": [
         { "name": "STR", "score": 10 },
         { "name": "DEX", "score": 10 },

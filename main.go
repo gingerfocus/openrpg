@@ -7,9 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 type Module struct {
@@ -46,20 +43,20 @@ func main() {
 		}
 	}
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	mux := http.NewServeMux()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "public/index.html")
-	})
+	mux.HandleFunc("/api/modules", listModules)
+	mux.HandleFunc("/api/modules/", handleModuleAction)
 
-	r.Route("/api", func(r chi.Router) {
-		r.Get("/modules", listModules)
-		r.Get("/modules/*", handleModuleAction)
-	})
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("public"))))
 
-	r.Handle("/*", http.StripPrefix("", http.FileServer(http.Dir("public"))))
+	// mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	if r.URL.Path != "/" {
+	// 		http.NotFound(w, r)
+	// 		return
+	// 	}
+	// 	http.ServeFile(w, r, "public/index.html")
+	// })
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -68,7 +65,7 @@ func main() {
 
 	fmt.Printf("Server starting on http://localhost:%s\n", port)
 	fmt.Printf("Modules path: %s\n", modulesPath)
-	http.ListenAndServe(":"+port, r)
+	http.ListenAndServe(":"+port, mux)
 }
 
 func listModules(w http.ResponseWriter, r *http.Request) {

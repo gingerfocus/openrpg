@@ -4,20 +4,10 @@
 let NAME = '@focus/dawn'
 let moduleData;
 
-// ----------------------  Plugin Data Helpers -----------------------------------
-
-function getDawnData(data) {
-    return OpenRpg.getPluginData(data, NAME);
-}
-
-function setDawnData(data, dawnData) {
-    OpenRpg.setPluginData(data, NAME, dawnData);
-}
-
 // ----------------------  Module Hooks -----------------------------------
 
 function preprocessAttributes(data) {
-    const dawnData = getDawnData(data);
+    const dawnData = OpenRpg.get(NAME);
     if (!dawnData || !dawnData.attributes) return {};
 
     let attributes = {}
@@ -33,7 +23,7 @@ function preprocessAttributes(data) {
 
 
 function renderSkills(container, data, editCallback, args) {
-    const dawnData = getDawnData(data);
+    const dawnData = OpenRpg.get(NAME)
     container.replaceChildren();
 
     if (args?.containerClasses) {
@@ -71,7 +61,7 @@ function renderSkills(container, data, editCallback, args) {
 }
 
 function renderTechniques(container, data, editCallback, args) {
-    const dawnData = getDawnData(data);
+    const dawnData = OpenRpg.get(NAME);
     container.replaceChildren()
 
     if (args?.containerClasses) {
@@ -137,8 +127,6 @@ function renderTechniques(container, data, editCallback, args) {
 
 OpenRpg.register('dawn.renderSkills', renderSkills);
 OpenRpg.register('dawn.renderTechniques', renderTechniques);
-
-
 
 // function renderAttributes(container, data, editCallback, args) {
 //     const dawnData = getDawnData(data);

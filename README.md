@@ -7,7 +7,7 @@ Web: `https://rpg.kamio.ink`
 
 Commands:
 + Run: `go run main.go`
-+ Test: `go test ./... -v`
++ Test: `go test ./tests/... -v`
 + Check: `tsc --noEmit`
 
 API endpoints:

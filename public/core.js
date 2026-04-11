@@ -5,7 +5,7 @@ let _character = null;
 const _hooks = {};
 
 /** @type {any} */
-const OpenRpgMath = {
+const _math = {
     /**
      * @param {string} str
      * @returns {{ start: number, end: number, inner: string }[]}
@@ -328,10 +328,7 @@ const OpenRpg = {
             const container = document.getElementById(pane.id);
             if (!container) continue;
 
-            const fn = OpenRpg.call(pane.hook);
-            if (fn) {
-                fn(container, data, null, pane);
-            } else {
+            if (!OpenRpg.call(pane.hook, container, null, pane)) {
                 container.innerHTML = `<p class="text-gray-500">No handler for ${pane.hook}</p>`;
             }
         }

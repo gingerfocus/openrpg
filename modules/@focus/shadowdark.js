@@ -150,13 +150,13 @@ function renderClassFeatures(container, data, editCallback) {
     }
 }
 
-OpenRpg.registerHook('dawn.initCharacter', initCharacter);
-OpenRpg.registerHook('shadowdark.initCharacter', initCharacter);
-OpenRpg.registerHook('openrpg.initCharacter', initCharacter);
+OpenRpg.register('dawn.initCharacter', initCharacter);
+OpenRpg.register('shadowdark.initCharacter', initCharacter);
+OpenRpg.register('openrpg.initCharacter', initCharacter);
 
-OpenRpg.registerHook('dawn.renderAttributes', renderStats);
-OpenRpg.registerHook('shadowdark.renderStats', renderStats);
+OpenRpg.register('dawn.renderAttributes', renderStats);
+OpenRpg.register('shadowdark.renderStats', renderStats);
 
-OpenRpg.registerHook('dawn.renderSkills', renderClassFeatures);
-OpenRpg.registerHook('shadowdark.renderClassFeatures', renderClassFeatures);
+OpenRpg.register('dawn.renderSkills', renderClassFeatures);
+OpenRpg.register('shadowdark.renderClassFeatures', renderClassFeatures);
 
