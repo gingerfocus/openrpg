@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "bunx tsc"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  },
+  "type": "module"
+}

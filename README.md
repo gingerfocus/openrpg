@@ -8,7 +8,7 @@ Web: `https://rpg.kamio.ink`
 Commands:
 + Run: `go run main.go`
 + Test: `go test ./tests/... -v`
-+ Check: `tsc --noEmit`
++ Check: `bun run build`
 
 API endpoints:
 - `GET /api/modules` — list all modules

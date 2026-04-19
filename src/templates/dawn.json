@@ -6,30 +6,36 @@
         "column": "border-2 border-white rounded-lg p-2 flex flex-col gap-4 flex-1",
         "panes": [
             {
-                "id": "stats",
+                "id": "dawn-stats",
                 "title": "Stats",
-                "hook": "dawn.renderAttributes",
-                "containerClasses": "flex flex-row gap-4 flex-wrap",
-                "itemClasses": "border-2 border-white rounded-lg p-2 flex flex-col gap-2 w-32 h-24 text-center"
+                "hook": "dawn.stats",
+                "containerClasses": "flex flex-col gap-1",
+                "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-row justify-between"
             },
             {
                 "id": "skills",
                 "title": "Class Features",
-                "hook": "dawn.renderSkills",
+                "hook": "dawn.skills",
                 "containerClasses": "flex flex-col gap-1",
                 "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-row justify-between"
             },
             {
                 "id": "techniques",
                 "title": "Techniques",
-                "hook": "dawn.renderTechniques",
+                "hook": "dawn.techniques",
                 "containerClasses": "flex flex-col gap-1",
                 "itemClasses": "border-2 border-teal-700 rounded-lg p-2 flex flex-col gap-1"
             },
             {
                 "id": "inventory",
                 "title": "Inventory",
-                "hook": "openrpg.renderInventory",
+                "hook": "core.inventory",
+                "containerClasses": "flex flex-col gap-4"
+            },
+            {
+                "id": "stats",
+                "title": "Stats",
+                "hook": "core.stats",
                 "containerClasses": "flex flex-col gap-4"
             }
         ]

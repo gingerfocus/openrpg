@@ -1,8 +1,1 @@
-# binary
-openrpg-server
-openrpg
-
-# Bloat
-/.envrc
-/.direnv
-/AGENTS.md
+/dist

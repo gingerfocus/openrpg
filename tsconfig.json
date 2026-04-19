@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler"
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true
   },
-  "include": ["public/**/*.js", "modules/**/*.js"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "public"]
 }
